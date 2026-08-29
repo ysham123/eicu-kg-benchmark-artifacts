@@ -1,0 +1,131 @@
+schema_version: 1
+
+benchmark:
+  name: eICU-KG
+  task: held_out_drug_of_concept_tail_ranking
+  setting: transductive
+  candidate_space_size: 147
+  query_unit: concept_edge
+  split_unit: uniquepid
+
+split:
+  allocation: [0.8, 0.1, 0.1]
+  seed: 42
+  patient_disjoint: true
+  target_bearing_patients:
+    train: 356
+    validation: 54
+    test: 47
+  target_edges:
+    train: 32677
+    validation: 3791
+    test: 4939
+
+hard_slice:
+  definition: true_concept_training_frequency_at_most_cutoff
+  cutoff: 383
+  uses_training_data_only: true
+  validation_queries: 1375
+  test_queries: 1886
+  test_fraction: 0.3819
+  hard_concepts: 137
+  head_concepts: 10
+  head_test_queries: 3053
+
+ranking:
+  true_rank: "1 + sum(scores > true_score)"
+  tie_policy: optimistic
+  metrics: [mrr, hits_at_10]
+  report_slices: [test_all, hard]
+
+baselines:
+  dxpop_signature:
+    description: exact_diagnosis_signature_prior_with_global_frequency_fallback
+    csr_parent: true
+  dxpop_additive:
+    description: sum_of_per_diagnosis_training_cooccurrence_counts
+    csr_parent: false
+    use: binwise_comparator
+
+csr_hard:
+  expansion: Constrained Selective Reranking on HARD
+  status: limited_benchmark_case_study
+  parent: dxpop_signature
+  seeds: [0, 1, 2]
+  gate:
+    feature_order:
+      - dx_top1
+      - dx_margin
+      - rg_top1
+      - rg_margin
+      - agree
+      - dx_entropy
+      - rg_entropy
+      - constant_zero
+    raw_logit_features: true
+    cross_query_normalization: false
+    temperature_scaling: false
+    entropy_softmax_epsilon: 1.0e-9
+    architecture: [8, 64, 64, 1]
+    activation: relu
+  labels:
+    source_split: train
+    hard_cutoff: 383
+    reference_shortlist_m: 25
+    reference_gamma: 2.0
+    positive_rule: "hard and r0 > 10 and r1 <= 10"
+    fallback_rule: "hard and (r0 - r1) >= 1"
+    recorded_positive_count: 2967
+    recorded_positive_fraction: 0.0908
+    fallback_used_in_recorded_bundles: false
+  training:
+    epochs: 40
+    batch_mode: full_batch
+    optimizer: adamw
+    learning_rate: 0.002
+    weight_decay: 0.0001
+    loss: bce_with_logits
+    positive_weight: n_negative_over_n_positive
+    early_stopping: false
+  inference:
+    budget_q: 0.07
+    selected_hard_queries: 132
+    selection_count: "int(round(q * n_hard))"
+    shortlist_m: 25
+    shortlist_membership: numpy_argpartition_on_frozen_candidate_order
+    candidate_order_hash_required: true
+    fusion_gamma: 1.0
+    modify_hard_rows_only: true
+    modify_shortlist_candidates_only: true
+  validation_guard:
+    split: full_validation
+    comparator: dxpop_signature
+    delta: two_sided_absolute
+    mrr_tolerance: 0.001
+    hits_at_10_tolerance: 0.001
+    require_both: true
+    test_used_for_selection: false
+  fixed_budget_sweep: [0.01, 0.03, 0.05, 0.07, 0.10, 0.15, 0.20]
+  largest_jointly_safe_budget: 0.07
+
+diagnostics:
+  adaptive_per_seed_budget:
+    status: diagnostic_only
+    selected_q: [0.07, 0.10, 0.10]
+  dxpop_temperature_scaling:
+    status: calibration_only
+    selected_on: validation_nll
+    temperature: 1.1
+    enters_csr_gate: false
+
+audits:
+  patient_bootstrap:
+    sampling_unit: patient
+    statistic: seed_averaged_hits_at_10_difference
+    replicates: 10000
+    seed: 20260828
+    interval: percentile_95
+    recorded_point_difference: 0.00671615411806292
+    recorded_interval: [0.000417843, 0.013551790]
+  private_score_manifest:
+    record_all_zero_row_counts: true

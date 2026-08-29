@@ -1,0 +1,2 @@
+# Full credentialed environment. pyproject.toml is authoritative.
+-e .[ingest,train]

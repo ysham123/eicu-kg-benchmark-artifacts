@@ -1,0 +1,12 @@
+model_id,implementation,protocol,split,seed,n_queries,hit_count_at_10,hits_at_10,hits_at_10_sd,mrr,mrr_sd,provenance
+DXPOP-Signature,exact diagnosis-signature prior,deterministic,test_all,deterministic,4939,3048,0.6171289734764123,,0.4218537205108834,,cached-score evaluation
+DXPOP-Signature,exact diagnosis-signature prior,deterministic,hard,deterministic,1886,46,0.024390243902439025,,0.03379727525683383,,cached-score evaluation
+DXPOP-Signature,exact diagnosis-signature prior,deterministic,head,deterministic,3053,3002,0.9832951195545365,,0.6615767653026088,,head complement of HARD
+DXPOP-Additive,sum of per-diagnosis counts,binwise comparator,test_all,deterministic,4939,3062,0.6199635553755821,,0.4245356574936408,,full-precision recomputation
+DXPOP-Additive,sum of per-diagnosis counts,binwise comparator,hard,deterministic,1886,56,0.029692470837751856,,0.037476484843341276,,full-precision recomputation
+DXPOP-Additive,sum of per-diagnosis counts,binwise comparator,head,deterministic,3053,3006,0.9846053062561415,,0.6636426341128563,,head complement of HARD
+CSR-HARD,constrained selective reranking,fixed_common_q_0.07,hard,0,1886,54,0.02863202545068929,,,,verified fixed-budget seed hit count
+CSR-HARD,constrained selective reranking,fixed_common_q_0.07,hard,1,1886,63,0.03340402969247084,,,,verified fixed-budget seed hit count
+CSR-HARD,constrained selective reranking,fixed_common_q_0.07,hard,2,1886,59,0.03128313891834571,,,,verified fixed-budget seed hit count
+CSR-HARD,constrained selective reranking,fixed_common_q_0.07,hard,mean,1886,58.666666666666664,0.031106398020501944,0.002390906549747028,0.0342723804312824,0.000164275576683496,mean and sample SD across seeds 0/1/2
+CSR-HARD,constrained selective reranking,fixed_common_q_0.07,test_all,mean,4939,3060.6666666666665,0.6196935951947088,,0.4220351435436855,,mean across seeds 0/1/2

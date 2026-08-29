@@ -1,0 +1,46 @@
+# Credentialed and patient-derived data
+*.csv.gz
+*.parquet
+*.tsv
+*.tsv.gz
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.hdf5
+*.sqlite
+*.db
+patient_split_ids*
+visit2dxsig*
+
+# Generated private locations
+data/
+artifacts/
+mapping/
+splits/
+logits/
+checkpoints/
+
+# Development notebooks are not part of the release contract
+*.ipynb
+.ipynb_checkpoints/
+
+# Python and local environment
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+.env
+*.env
+.DS_Store
+
+# Explicitly reviewed aggregate result table
+!results/
+!results/paper_metrics.csv

@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eicu-kg-artifacts"
+version = "0.1.0"
+description = "Public protocol and verification code for the eICU-KG benchmark"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "numpy>=1.26,<3",
+  "PyYAML>=6,<7",
+]
+
+[project.optional-dependencies]
+ingest = [
+  "neo4j>=5.20,<6",
+  "pandas>=2.1,<3",
+]
+train = [
+  "torch>=2.2,<3",
+]
+test = [
+  "pytest>=8,<9",
+  "ruff>=0.6,<1",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
